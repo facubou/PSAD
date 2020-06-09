@@ -1,9 +1,11 @@
+#Check if user's password is next to expiration and send the results by mail
+
 $AcsExp = Get-ADUser -Filter {Name -like "*"} -properties Name | select-object -ExpandProperty Name
 $FechaHoy = Get-Date
 #$FechaHoy = $FechaHoy.ToString("dd/MM/yyyy")
 
-$Fromusr = "test@gmail.com" #put your mail account
-$Destinatario = "test2@gmail.com" #put receiver mail account
+$Fromusr = "test@gmail.com" #set your mail account
+$Destinatario = "test2@gmail.com" #set receiver mail account
 $Sub = "Vencimiento de password"
 $anonUser = "anonymous"
 $anonPass = ConvertTo-SecureString "anonymous" -AsPlainText -Force
@@ -18,7 +20,7 @@ ForEach ($user in $AcsExp)
     $PassExpira = Get-ADUser -Filter "Name -like '$user'" -properties PasswordNeverExpires | select-object -ExpandProperty PasswordNeverExpires
     $nroEmpleado = Get-ADUser -Filter "Name -like '$user'" -properties EmployeeNumber | select-object -ExpandProperty EmployeeNumber
   
-    #Validate is enabled, password expiration is active and user has EmployeeNumber
+    #Validating if user is enabled, password expiration is active and user has EmployeeNumber
 
     if ($Enabled -eq $true -and $PassExpira -eq $false -and -not ([string]::IsNullOrEmpty($nroEmpleado)))
     {
@@ -27,11 +29,9 @@ ForEach ($user in $AcsExp)
         $FechaVencimiento_Resta15 = $FechaVencimiento.AddDays(AdvisorDate) 
         #$FechaVencimiento_Resta12 = $FechaVencimiento_Resta12.ToString("dd/MM/yyyy")
         $FechaVencimientoToString = $FechaVencimiento.ToString("dd/MM/yyyy")
-
-        #$Fecha75 = $FechaHoy.AddDays(15
-        #$Fecha75ToString = $Fecha75.ToString("dd/MM/yyyy")
         $prop="Name","DisplayName","UserPrincipalName"
 
+        #Validating dates
         if ($FechaHoy -ge $FechaVencimiento_Resta15 -and $FechaPasswordLastSet -like "*2020*")
             
             {
