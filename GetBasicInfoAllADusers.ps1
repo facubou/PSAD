@@ -18,8 +18,7 @@ $AcsExp = Get-ADUser -Filter {Name -like "*"} -properties Name | select-object -
             Select-Object -Property $prop | 
             ConvertTo-Csv -NoTypeInformation |     
             Select-Object -Skip 1)
-	    #Write-Output (Get-ADUser -Filter "Name -like '$user'" -properties $prop | ConvertTo-Csv -NoTypeInformation)
-
+	    
         }
 
  }
