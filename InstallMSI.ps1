@@ -1,5 +1,5 @@
 $computers = 'PC0765342'
-$sourcefile = "\Desktop\agent_cloud_x64.msi"
+$sourcefile = "\\ServerName\Desktop\agent_cloud_x64.msi"
 
 $jobscript = {
 	Param($computer)
@@ -8,7 +8,7 @@ $jobscript = {
 		New-Item $destinationFolder -Type Directory
 	}
 	Copy-Item -Path $sourcefile -Destination $destinationFolder
-	Invoke-Command -ComputerName $computer -ScriptBlock { Msiexec c:\temp\CrystalDiskInfo7.0.4.msi /i  /log C:\MSIInstall.log }
+	Invoke-Command -ComputerName $computer -ScriptBlock { Msiexec c:\temp\agent_cloud_x64.msi /i  /log C:\MSIInstall.log }
 }
 
 $computer | 
