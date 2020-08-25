@@ -1,3 +1,4 @@
+#Script get the middle of canonicalName for extract user's area
 $Usuarios = get-content -path "C:\temp\users.txt.txt"
 
 ForEach ($user in $usuarios)
