@@ -1,6 +1,8 @@
+
+#Check if password was changed in last 30 days and send mail with users out of compliance
+
 $AcsExp = Get-ADUser -Filter {Name -like "*"} -properties Name | select-object -ExpandProperty Name
 $FechaHoy = Get-Date
-#$FechaHoy = $FechaHoy.ToString("dd/MM/yyyy")
 
 $Fromusr = "yourmailaccoint@domain.com"
 $Destinatario = "destinationmailaccount@domain.com"
