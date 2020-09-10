@@ -19,10 +19,11 @@ ForEach ($user in $AcsExp)
     $Enabled = Get-ADUser -Filter "Name -like '$user'" -properties Enabled | select-object -ExpandProperty Enabled
     $PassExpira = Get-ADUser -Filter "Name -like '$user'" -properties PasswordNeverExpires | select-object -ExpandProperty PasswordNeverExpires
     $nroEmpleado = Get-ADUser -Filter "Name -like '$user'" -properties EmployeeNumber | select-object -ExpandProperty EmployeeNumber
+    $mail = Get-ADUser -Filter "Name -like '$user'" -properties mail | select-object -ExpandProperty mail
   
     #Validating if user is enabled, password expiration is active and user has EmployeeNumber
 
-    if ($Enabled -eq $true -and $PassExpira -eq $false -and -not ([string]::IsNullOrEmpty($nroEmpleado)))
+    if ($Enabled -eq $true -and $PassExpira -eq $false -and -not ([string]::IsNullOrEmpty($nroEmpleado)) -and -not ([string]::IsNullOrEmpty($mail))
     {
         $FechaPasswordLastSet = Get-ADUser -Filter "Name -like '$user'" -properties PasswordLastSet | select-object -ExpandProperty PasswordLastSet
         $FechaVencimiento = $FechaPasswordLastSet.AddDays(ExpirationDays) 
