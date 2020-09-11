@@ -1,23 +1,23 @@
-#Input Dataset
+#-----Input Dataset-----
+#Get all AD users
 $AcsExp = Get-ADUser -Filter {Name -like "*"} -properties Name | select-object -ExpandProperty Name
+#Get all users of another AD
 $AcsExpLeasing = Get-ADUser -Server "dc.domain.local" -Filter {Name -like "*"} -properties Name | select-object -ExpandProperty Name
-$AcsExpFactoring = Get-ADUser -Server "dc-domain.local" -Filter {Name -like "*"} -properties Name | select-object -ExpandProperty Name
+
 $FechaHoy = Get-Date
+#Get Users in a text file
 $AcsTxt = get-content "C:\users\ff\Desktop\usuariosSinLegajo.txt"
-$AcsTxtLeasing = get-content "C:\users\ff\Desktop\usuariosSinLegajoLeasing.txt"
-$AcsTxtFactoring = get-content "C:\users\ff\Desktop\\usuariosSinLegajoFactoring.txt"
+#Define propierties for export (if are needed)
 $prop="Name","DisplayName","UserPrincipalName","PasswordLastSet"
 
-#Datos para Servidor SMTP
+#SMTP Server data
 $Fromusr = "emailsecurity@domain.com"
 $Destinatario = "destino@domain.com"
 $anonUser = "anonymous"
 $anonPass = ConvertTo-SecureString "anonymous" -AsPlainText -Force
 $anonCred = New-Object System.Management.Automation.PSCredential($anonUser, $anonPass)
 $Smtpsvr = "192.168.1.2"
-$body = get-content "C:\users\ff\Desktop\body.txt" -Encoding UTF8 | Out-String
-$body2 = get-content "C:\users\ff\Desktop\body2.txt" -Encoding UTF8 | Out-String
-$body = $body + "XXXX" + $body2
+$body = get-content "C:\users\ff\Desktop\body.txt" -Encoding UTF8 | Out-String #Set with a simple string if enconding is not needed
 $sub = "Su clave de Windows se encuentra proxima a vencer"
 $encoding = "UTF8"
 
