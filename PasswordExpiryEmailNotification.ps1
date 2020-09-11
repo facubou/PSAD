@@ -12,7 +12,6 @@ $prop="Name","DisplayName","UserPrincipalName","PasswordLastSet"
 
 #SMTP Server data
 $Fromusr = "emailsecurity@domain.com"
-$Destinatario = "destino@domain.com"
 $anonUser = "anonymous"
 $anonPass = ConvertTo-SecureString "anonymous" -AsPlainText -Force
 $anonCred = New-Object System.Management.Automation.PSCredential($anonUser, $anonPass)
@@ -24,6 +23,7 @@ $encoding = "UTF8"
 Write-Output ("[#] ------------------Usuarios Domain------------------")
 ForEach ($user in $AcsExp)
 {
+    #Check if user exist and is nominal
     $Enabled = Get-ADUser -Filter "Name -like '$user'" -properties Enabled | select-object -ExpandProperty Enabled
     $PassExpira = Get-ADUser -Filter "Name -like '$user'" -properties PasswordNeverExpires | select-object -ExpandProperty PasswordNeverExpires
     $nroEmpleado = Get-ADUser -Filter "Name -like '$user'" -properties EmployeeNumber | select-object -ExpandProperty EmployeeNumber
@@ -34,7 +34,7 @@ ForEach ($user in $AcsExp)
         $FechaPasswordLastSet = Get-ADUser -Filter "Name -like '$user'" -properties PasswordLastSet | select-object -ExpandProperty PasswordLastSet
         $FechaVencimiento = $FechaPasswordLastSet.AddDays(30)
         $FechaVencimiento = $FechaVencimiento.ToString("dd/MM/yyyy")
-        $FechaHoy_Resta30 = $FechaHoy.AddDays(-23)
+        $FechaHoy_Resta30 = $FechaHoy.AddDays(-23) #Set for 7 days before block
 
         if ($FechaHoy_Resta30 -ge $FechaPasswordLastSet -and $FechaPasswordLastSet -like "*2020*")
             
@@ -44,19 +44,20 @@ ForEach ($user in $AcsExp)
                 ConvertTo-Csv -NoTypeInformation |     
                 Select-Object -Skip 1
                 $lista = $lista + $data + "," + $FechaVencimiento + "`n"
-                #$destinatario = 
+                $destinatario = $mail
                 
                 $Contador = $Contador +1
 
                 Write-Output ("[#] Usuario "+$User)
                 Write-Output ("[#] Ultimo Cambio de Pass "+$FechaPasswordLastSet)
-                #Send-MailMessage -to $Destinatario -from $fromusr -subject "$sub " -body "Nos contactamos desde Seguridad Informatica para informarle que su password vencera el $FechaVencimiento.`n`nPasada esta fecha, se procedera al bloqueo de la cuenta`n`nAnte cualquier duda o consulta, contactar a " -SmtpServer $Smtpsvr -Credential $anonCred                
+                Send-MailMessage -to $Destinatario -from $fromusr -subject $sub -body $body -bodyashtml -SmtpServer $Smtpsvr -Credential $anonCred -Encoding $encoding             
                 Write-Output ("[#] Correo enviado a "+$mail)
                 Write-Output "`n"
             }
     }
 }
 
+#Another loop for another data input (txt)
 Write-Output ("[#] ------------------Usuarios Domain Sin Legajo------------------`n")
 foreach($user in $AcsTxt) {
 
@@ -81,23 +82,20 @@ foreach($user in $AcsTxt) {
         ConvertTo-Csv -NoTypeInformation |     
         Select-Object -Skip 1
         $lista = $lista + $data + "," + $FechaVencimiento + "`n"
-                #$destinatario = 
                 
         $Contador = $Contador +1
 
         Write-Output ("[#] Usuario "+$User)
         Write-Output ("[#] Ultimo Cambio de Pass "+$FechaPasswordLastSet)
-                #Send-MailMessage -to $Destinatario -from $fromusr -subject "$sub " -body "Nos contactamos desde Seguridad Informatica para informarle que su password vencera el $FechaVencimiento.`n`nPasada esta fecha, se procedera al bloqueo de la cuenta`n`nAnte cualquier duda o consulta, contactar a " -SmtpServer $Smtpsvr -Credential $anonCred                
+        Send-MailMessage -to $mail -from $fromusr -subject $sub -body $body -bodyashtml -SmtpServer $Smtpsvr -Credential $anonCred -Encoding $encoding                
         Write-Output ("[#] Correo enviado a "+$mail)
         Write-Output "`n"
             }
         }
     }
-Write-Output ("Cantidad de correos enviados en BICE sin Legajo: $Contador")
-#write $lista | Out-File export1.txt
-#$export = 'export1.txt'
-#Send-MailMessage -to $Destinatario -from $fromusr -subject "$sub " -body "Nos contactamos desde Seguridad Informatica para informarle que su password vencera el $FechaVencimiento.`n`nPasada esta fecha, se procedera al bloqueo de la cuenta`n`nAnte cualquier duda o consulta, contactar a " -Attachments $export -SmtpServer $Smtpsvr -Credential $anonCred
+Write-Output ("Cantidad de correos enviados sin Legajo: $Contador")
 
+#Another loop for other AD
 Write-Output ("[#] `n----------------------Usuarios Active Directory nro 2---------------------:`n")
 ForEach ($user in $AcsExpLeasing)
 {
@@ -126,7 +124,7 @@ ForEach ($user in $AcsExpLeasing)
                 $lista = $lista + $data + "," + $FechaVencimiento + "`n"
                 Write-Output ("[#] Usuario "+$User)
                 Write-Output ("[#] Ultimo Cambio de Pass "+$FechaPasswordLastSet)
-                #Send-MailMessage -to $Destinatario -from $fromusr -subject "$sub " -body "Nos contactamos desde Seguridad Informatica para informarle que su password vencera el $FechaVencimiento.`n`nPasada esta fecha, se procedera al bloqueo de la cuenta`n`nAnte cualquier duda o consulta, contactar a " -SmtpServer $Smtpsvr -Credential $anonCred                
+                Send-MailMessage -to $mail -from $fromusr -subject $sub -body $body -bodyashtml -SmtpServer $Smtpsvr -Credential $anonCred -Encoding $encoding
                 Write-Output ("[#] Correo enviado a "+$mail)
                 Write-Output "`n"
             }
