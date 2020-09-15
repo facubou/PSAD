@@ -10,8 +10,17 @@ $AcsTxt = get-content "C:\users\ff\Desktop\usuariosSinLegajo.txt"
 #Define propierties for export (if are needed)
 $prop="Name","DisplayName","UserPrincipalName","PasswordLastSet"
 
+#Log Function
+Function EscribeLog
+{
+   Param ([string]$logstring)
+
+   Add-content $Logfile -value $logstring
+}
+
 #SMTP Server data
 $Fromusr = "emailsecurity@domain.com"
+$Destinatario = "receivedLog@domain.com"
 $anonUser = "anonymous"
 $anonPass = ConvertTo-SecureString "anonymous" -AsPlainText -Force
 $anonCred = New-Object System.Management.Automation.PSCredential($anonUser, $anonPass)
@@ -20,7 +29,7 @@ $body = get-content "C:\users\ff\Desktop\body.txt" -Encoding UTF8 | Out-String #
 $sub = "Su clave de Windows se encuentra proxima a vencer"
 $encoding = "UTF8"
 
-Write-Output ("[#] ------------------Usuarios Domain------------------")
+EscribeLog("[#] ------------------Usuarios Domain------------------")
 ForEach ($user in $AcsExp)
 {
     #Check if user exist and is nominal
@@ -48,17 +57,17 @@ ForEach ($user in $AcsExp)
                 
                 $Contador = $Contador +1
 
-                Write-Output ("[#] Usuario "+$User)
-                Write-Output ("[#] Ultimo Cambio de Pass "+$FechaPasswordLastSet)
+                EscribeLog("[#] Usuario "+$User)
+                EscribeLog("[#] Ultimo Cambio de Pass "+$FechaPasswordLastSet)
                 Send-MailMessage -to $Destinatario -from $fromusr -subject $sub -body $body -bodyashtml -SmtpServer $Smtpsvr -Credential $anonCred -Encoding $encoding             
-                Write-Output ("[#] Correo enviado a "+$mail)
-                Write-Output "`n"
+                EscribeLog("[#] Correo enviado a "+$mail)
+                EscribeLog "`n"
             }
     }
 }
 
 #Another loop for another data input (txt)
-Write-Output ("[#] ------------------Usuarios Domain Sin Legajo------------------`n")
+EscribeLog("[#] ------------------Usuarios Domain Sin Legajo------------------`n")
 foreach($user in $AcsTxt) {
 
     $Enabled = Get-ADUser -Filter "Name -like '$user'" -properties Enabled | select-object -ExpandProperty Enabled
@@ -85,18 +94,18 @@ foreach($user in $AcsTxt) {
                 
         $Contador = $Contador +1
 
-        Write-Output ("[#] Usuario "+$User)
-        Write-Output ("[#] Ultimo Cambio de Pass "+$FechaPasswordLastSet)
+        EscribeLog("[#] Usuario "+$User)
+        EscribeLog("[#] Ultimo Cambio de Pass "+$FechaPasswordLastSet)
         Send-MailMessage -to $mail -from $fromusr -subject $sub -body $body -bodyashtml -SmtpServer $Smtpsvr -Credential $anonCred -Encoding $encoding                
-        Write-Output ("[#] Correo enviado a "+$mail)
-        Write-Output "`n"
+        EscribeLog("[#] Correo enviado a "+$mail)
+        EscribeLog("`n")
             }
         }
     }
-Write-Output ("Cantidad de correos enviados sin Legajo: $Contador")
+EscribeLog("Cantidad de correos enviados sin Legajo: $Contador")
 
 #Another loop for other AD
-Write-Output ("[#] `n----------------------Usuarios Active Directory nro 2---------------------:`n")
+EscribeLog("[#] `n----------------------Usuarios Active Directory nro 2---------------------:`n")
 ForEach ($user in $AcsExpLeasing)
 {
     $Enabled = Get-ADUser -Server "dc.domain.local" -Filter "Name -like '$user'" -properties Enabled | select-object -ExpandProperty Enabled
@@ -122,15 +131,15 @@ ForEach ($user in $AcsExpLeasing)
                 ConvertTo-Csv -NoTypeInformation |     
                 Select-Object -Skip 1
                 $lista = $lista + $data + "," + $FechaVencimiento + "`n"
-                Write-Output ("[#] Usuario "+$User)
-                Write-Output ("[#] Ultimo Cambio de Pass "+$FechaPasswordLastSet)
+                EscribeLog("[#] Usuario "+$User)
+                EscribeLog("[#] Ultimo Cambio de Pass "+$FechaPasswordLastSet)
                 Send-MailMessage -to $mail -from $fromusr -subject $sub -body $body -bodyashtml -SmtpServer $Smtpsvr -Credential $anonCred -Encoding $encoding
-                Write-Output ("[#] Correo enviado a "+$mail)
-                Write-Output "`n"
+                EscribeLog("[#] Correo enviado a "+$mail)
+                EscribeLog("`n")
             }
     }
 }
-Write-Output ("Cantidad de correos enviados en AD nro 2: $Contador")
+EscribeLog("Cantidad de correos enviados en AD nro 2: $Contador")
 
 write $lista | Out-File export1.txt
 $export = 'export1.txt'
