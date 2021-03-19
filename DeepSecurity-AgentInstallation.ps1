@@ -82,7 +82,7 @@ Start-Sleep -s 50
 
 & $Env:ProgramFiles"\Trend Micro\Deep Security Agent\dsa_control" -r
 
-& $Env:ProgramFiles"\Trend Micro\Deep Security Agent\dsa_control" -a $ACTIVATIONURL "policyid:23"
+& $Env:ProgramFiles"\Trend Micro\Deep Security Agent\dsa_control" -a $ACTIVATIONURL "policyid:XX"
 
 #& $Env:ProgramFiles"\Trend Micro\Deep Security Agent\dsa_control" -a dsm://yourdeepsecurityserver:4120/ "policyid:XX"
 
