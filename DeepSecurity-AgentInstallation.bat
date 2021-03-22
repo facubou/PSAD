@@ -15,7 +15,7 @@ for /F "tokens=*" %%a in ('type Servers.txt') do (
     echo Activating Agent in !equipo!
     \r\n
     winrs -r:!equipo! %temp%\DeepSec\dsa_control.cmd -r
-    winrs -r:!equipo! %temp%\DeepSec\dsa_control.cmd -a dsm://yourdeepsecurity:4120/ "policyid:23"
+    winrs -r:!equipo! %temp%\DeepSec\dsa_control.cmd -a dsm://yourdeepsecurity:4120/ "policyid:X"
     winrs -r:!equipo! RD /S/Q %TEMP%\DeepSec\
     timeout 7
 )
